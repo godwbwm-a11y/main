@@ -467,6 +467,8 @@
         }
 
         // [AI 답장 기능] Gemini API 호출
+        const apiKey = "__GEMINI_API_KEY__";
+ 
         async function askJesus() {
             const input = document.getElementById('secret-note').value.trim();
             const responseArea = document.getElementById('ai-response-area');
