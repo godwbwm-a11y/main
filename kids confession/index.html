@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예수님과 만나는 마음 세탁소</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* 1. 폰트 설정 */
+        @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Jua&display=swap');
+
+        body {
+            font-family: 'Gaegu', cursive;
+            background-color: #f0f9ff;
+            color: #4b5563;
+            overflow-x: hidden;
+            font-size: 1.4rem;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4, .title-font {
+            font-family: 'Jua', sans-serif;
+        }
+
+        /* 2. 수채화 배경 효과 */
+        .watercolor-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(255, 182, 193, 0.4) 0%, transparent 45%),
+                radial-gradient(circle at 85% 75%, rgba(173, 216, 230, 0.4) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(255, 253, 208, 0.4) 0%, transparent 55%);
+            filter: blur(40px);
+        }
+
+        /* 3. 탭 네비게이션 스타일 */
+        .nav-btn {
+            transition: all 0.3s ease;
+            font-size: 1.3rem;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .tab-active {
+            background-color: #fff;
+            color: #3b82f6;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+            font-weight: bold;
+            transform: scale(1.05);
+        }
+        .tab-inactive {
+            color: #9ca3af;
+        }
+        .tab-inactive:hover {
+            color: #6b7280;
+            background-color: rgba(255,255,255,0.5);
+        }
+
+        /* 4. 애니메이션 */
+        .fade-in { animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bubble { animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* 체크박스 디자인 커스텀 */
+        .custom-checkbox:checked + div {
+            background-color: #eff6ff;
+            border-color: #60a5fa;
+            color: #1d4ed8;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transform: scale(1.01);
+        }
+        
+        /* 버튼 클릭 문제 방지 */
+        button {
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* 기도문 카드 스타일 */
+        .prayer-card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e0f2fe; /* light blue border */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .prayer-title {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px dashed #bfdbfe;
+            display: inline-block;
+        }
+
+        /* 입력 필드 스타일 */
+        .name-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 3px solid #bfdbfe;
+            font-family: 'Gaegu', cursive;
+            font-size: 1.3rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .name-input:focus {
+            border-color: #3b82f6;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 배경 -->
+    <div class="watercolor-bg"></div>
+
+    <!-- 상단 헤더 -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-blue-100">
+        <div class="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-4xl">🛁</span>
+                <div>
+                    <div class="text-base text-blue-400 font-bold title-font">서창2동 성당 주일학교</div>
+                    <h1 class="text-2xl md:text-3xl text-blue-600 title-font tracking-wide">마음 세탁소</h1>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 탭 메뉴 -->
+        <nav class="max-w-3xl mx-auto px-2 py-3 flex justify-around overflow-x-auto gap-2">
+            <button type="button" onclick="switchTab('home')" class="nav-btn tab-active px-3 py-2" data-target="home">🏠 홈</button>
+            <button type="button" onclick="switchTab('check')" class="nav-btn tab-inactive px-3 py-2" data-target="check">🔍 거울</button>
+            <button type="button" onclick="switchTab('wash')" class="nav-btn tab-inactive px-3 py-2" data-target="wash">🧼 세탁</button>
+            <button type="button" onclick="switchTab('guide')" class="nav-btn tab-inactive px-3 py-2" data-target="guide">📖 고백</button>
+            <button type="button" onclick="switchTab('penance')" class="nav-btn tab-inactive px-3 py-2" data-target="penance">🕊️ 보속</button>
+        </nav>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="flex-grow max-w-3xl mx-auto w-full p-6 pb-20 space-y-8 relative z-10">
+
+        <!-- [섹션 1] 홈: 환영 인사 & 이름 입력 -->
+        <section id="home" class="fade-in text-center space-y-8 py-8">
+            <div class="bubble inline-block text-8xl mb-4">🫧</div>
+            <h2 class="text-4xl title-font text-blue-600 mb-2">"어서 와, 마음 세탁소야!"</h2>
+            
+            <div class="bg-white/70 p-8 rounded-[2rem] shadow-xl border-4 border-white backdrop-blur-sm">
+                <p class="text-2xl leading-relaxed mb-6 text-gray-600">
+                    안녕? 반가워!<br>
+                    예수님과 성모님이 너를 기다리고 계셔.<br>
+                    들어가기 전에 너의 이름을 알려줄래?
+                </p>
+                
+                <!-- 이름 입력 폼 (한 칸으로 통합) -->
+                <div class="flex flex-col gap-4 max-w-sm mx-auto mb-4">
+                    <input type="text" id="user-full-name" class="name-input" placeholder="이름과 세례명을 적어줘 (예: 김사랑 요셉)">
+                </div>
+
+                <p class="text-lg text-gray-500">
+                    마음의 얼룩을 깨끗하게 씻으러<br>함께 출발해보자! 🚀
+                </p>
+            </div>
+
+            <!-- 시작 버튼 -->
+            <button type="button" onclick="saveNameAndStart()" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white text-2xl font-bold py-4 px-12 rounded-full shadow-lg transition-transform transform hover:scale-105 animate-bounce">
+                마음 살펴보기 시작! 👉
+            </button>
+        </section>
+
+        <!-- [섹션 2] 거울 -->
+        <section id="check" class="hidden fade-in space-y-10">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-white/80 px-6 py-2 rounded-full shadow-sm mb-4">
+                    <span class="text-5xl">🪞</span>
+                </div>
+                <h2 class="text-3xl title-font text-blue-600">내 마음 비춰보기</h2>
+                <p class="text-xl text-gray-500 mt-2">천천히 읽으며 해당되는 것을 눌러보세요.</p>
+            </div>
+
+            <!-- 거울 하나 -->
+            <div class="bg-white/60 p-6 rounded-[2rem] border-4 border-white shadow-sm">
+                <div class="text-center mb-6">
+                    <span class="inline-block bg-orange-100 text-orange-600 px-5 py-2 rounded-full text-lg font-bold title-font">첫 번째 거울</span>
+                </div>
+
+                <h3 class="text-2xl title-font text-orange-500 mb-4 pl-3 border-l-8 border-orange-300">🧡 하느님 사랑 (1~3계명)</h3>
+                <div class="grid gap-4 mb-10">
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">⛪</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">주일 미사에 빠지거나, 미사 시간에 딴생각하며 장난쳤습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🙏</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">아침, 저녁 기도나 식사 전 기도를 귀찮아서 빼먹었습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">😶</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">하느님의 이름을 함부로 부르거나 장난감처럼 대했습니다.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <h3 class="text-2xl title-font text-pink-500 mb-4 pl-3 border-l-8 border-pink-300">🧡 부모님 사랑 (4계명)</h3>
+                <div class="grid gap-4">
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">😠</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">부모님 말씀에 "싫어요!" 하고 대들거나 퉁명스럽게 짜증 냈습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🤥</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">혼날까 봐 부모님께 거짓말을 하거나, 속상하게 해 드렸습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">💝</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">부모님이 베풀어 주신 사랑에 감사하는 마음을 잊고 지냈습니다.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 구분선 -->
+            <div class="flex items-center justify-center gap-4 opacity-50">
+                <div class="h-1 bg-blue-200 rounded-full w-24"></div>
+                <span class="text-3xl">✨</span>
+                <div class="h-1 bg-blue-200 rounded-full w-24"></div>
+            </div>
+
+            <!-- 거울 둘 -->
+            <div class="bg-white/60 p-6 rounded-[2rem] border-4 border-white shadow-sm">
+                <div class="text-center mb-6">
+                    <span class="inline-block bg-green-100 text-green-600 px-5 py-2 rounded-full text-lg font-bold title-font">두 번째 거울</span>
+                </div>
+
+                <h3 class="text-2xl title-font text-green-600 mb-4 pl-3 border-l-8 border-green-300">🧡 친구와 이웃 사랑</h3>
+                <div class="grid gap-4 mb-10">
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🥊</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">친구와 주먹 다짐을 하거나, 심한 말로 마음에 상처를 주었습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">😈</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">친구를 따돌리거나 나쁜 별명을 부르며 놀렸습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🤫</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">친구나 다른 사람의 물건을 허락 없이 가져갔습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">👀</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">친구가 가진 것이 부러워서 질투하거나 샘냈습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🤥</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">나를 뽐내려고, 혹은 곤란한 상황을 피하려고 거짓말을 했습니다.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <h3 class="text-2xl title-font text-purple-500 mb-4 pl-3 border-l-8 border-purple-300">🧡 소중한 나 (생활)</h3>
+                <div class="grid gap-4">
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🎮</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">유튜브나 게임을 하느라 해야 할 일을 자꾸 미루었습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🚫</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">인터넷에서 보지 말아야 할 나쁜 영상이나 사진을 일부러 찾아보았습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">💬</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">친구들과 모여서 음란한 이야기나 욕설을 재미 삼아 했습니다.</span>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer group block">
+                        <input type="checkbox" class="custom-checkbox hidden">
+                        <div class="p-5 bg-white rounded-2xl border-2 border-transparent transition-all flex items-start gap-4">
+                            <span class="text-3xl mt-1">🍱</span>
+                            <span class="text-xl text-gray-600 leading-snug font-medium">음식을 불평하며 버리거나, 물건을 아껴 쓰지 않았습니다.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 구분선 -->
+            <div class="flex items-center justify-center gap-4 opacity-50">
+                <div class="h-1 bg-blue-200 rounded-full w-24"></div>
+                <span class="text-3xl">✨</span>
+                <div class="h-1 bg-blue-200 rounded-full w-24"></div>
+            </div>
+
+            <!-- 거울 셋 -->
+            <div class="bg-white/60 p-6 rounded-[2rem] border-4 border-white shadow-sm">
+                <div class="text-center mb-6">
+                    <span class="inline-block bg-yellow-100 text-yellow-600 px-5 py-2 rounded-full text-lg font-bold title-font">세 번째 거울</span>
+                </div>
+                <h3 class="text-2xl title-font text-yellow-500 mb-4 pl-3 border-l-8 border-yellow-300">🖍️ 나만의 고백</h3>
+                <div class="grid gap-4">
+                    <div class="p-5 bg-white rounded-2xl border-2 border-yellow-100 shadow-inner">
+                        <label for="manual-sins" class="block text-xl text-gray-600 mb-2 font-medium">위에서 찾지 못한 잘못이 있다면 적어보세요.</label>
+                        <textarea id="manual-sins" class="w-full h-32 p-4 text-lg rounded-xl border-2 border-yellow-200 focus:border-yellow-400 focus:ring-0 resize-none bg-yellow-50/50 leading-relaxed" placeholder="예: 동생 장난감을 뺏었어요."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-6">
+                 <button type="button" onclick="switchTab('wash')" class="bg-pink-400 hover:bg-pink-500 text-white text-2xl title-font py-4 px-12 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    내 마음 씻으러 가기! 🧼
+                </button>
+            </div>
+        </section>
+
+        <!-- [섹션 3] 세탁 -->
+        <section id="wash" class="hidden fade-in space-y-8">
+            <div class="text-center">
+                <span class="text-6xl">🧼</span>
+                <h2 class="text-3xl title-font text-pink-500 mt-2">마음의 얼룩 씻어내기</h2>
+                <!-- 비밀 보장 문구 추가 -->
+                <p class="text-xl text-blue-500 font-bold mt-2">🔒 쉿! 여기서 적은 내용은 아무도 볼 수 없고 사라져요.<br>비밀은 꼭 지켜줄게!</p>
+            </div>
+
+            <!-- 비밀 쪽지 입력창 -->
+            <div class="relative">
+                <textarea id="secret-note" class="w-full h-80 p-6 text-xl rounded-[2rem] border-4 border-pink-200 focus:border-pink-400 focus:ring-0 resize-none bg-white/90 shadow-inner leading-relaxed" placeholder="거울에서 체크한 죄들이 여기에 자동으로 나타나요..."></textarea>
+                
+                <!-- 씻김 애니메이션용 커버 -->
+                <div id="bubble-cover" class="absolute top-0 left-0 w-full h-full bg-blue-100/90 backdrop-blur-sm rounded-[2rem] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-1000 z-10">
+                    <span class="text-5xl text-blue-500 font-bold title-font animate-pulse">🫧 깨끗해졌다! 🫧</span>
+                </div>
+            </div>
+
+            <!-- 버튼 그룹 (순서 변경됨: 답장 -> 보러가기 -> 삭제) -->
+            <div class="flex flex-col gap-4">
+                <!-- 1. 예수님의 답장 받기 -->
+                <button type="button" onclick="askJesus()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-white text-2xl title-font py-4 rounded-2xl shadow-lg transition-transform active:scale-95 animate-pulse">
+                    💌 예수님의 답장 받기
+                </button>
+
+                <!-- AI 응답 영역 (답장 받기 버튼 바로 아래에 위치) -->
+                <div id="ai-response-area" class="hidden mt-4 bg-yellow-50 p-8 rounded-[2rem] border-4 border-yellow-200 relative shadow-md">
+                    <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-white px-6 py-2 rounded-full text-xl font-bold title-font shadow-sm">From. 예수님</div>
+                    <div id="ai-loading" class="hidden text-center py-6">
+                        <span class="text-4xl animate-spin inline-block mb-2">⏳</span><br>
+                        <span class="text-gray-500">예수님이 편지를 쓰고 계셔요...</span>
+                    </div>
+                    <div id="ai-message" class="text-xl leading-relaxed text-gray-700 whitespace-pre-wrap"></div>
+                </div>
+
+                <!-- 2. 적은 내용 들고 고해성사 보러가기 -->
+                <button type="button" onclick="transferAndGo()" class="w-full bg-green-500 hover:bg-green-600 text-white text-2xl title-font py-4 rounded-2xl shadow-lg border-b-4 border-green-700 transition-transform transform active:scale-95 flex items-center justify-center gap-3">
+                    <span>🏃‍♂️</span> 적은 내용 들고 고해성사 보러가기
+                </button>
+
+                <!-- 3. 물로 씻어내기 -->
+                <button type="button" onclick="washAway()" class="w-full bg-blue-300 hover:bg-blue-400 text-white text-xl title-font py-4 rounded-2xl shadow transition-transform active:scale-95">
+                    🚿 물로 씻어내기 (삭제)
+                </button>
+            </div>
+        </section>
+
+        <!-- [섹션 4] 고해성사 가이드 -->
+        <section id="guide" class="hidden fade-in space-y-8">
+            <div class="bg-white/80 p-8 rounded-[2rem] shadow-xl border-4 border-blue-100 backdrop-blur-sm">
+                <div class="text-center mb-8 border-b-2 border-blue-100 pb-6">
+                    <span class="text-5xl">🛐</span>
+                    <h2 class="text-3xl title-font text-blue-600 mt-2">고해소에서 이렇게 말해요</h2>
+                </div>
+                
+                <div class="space-y-8 text-xl">
+                    <div class="flex gap-4">
+                        <div class="font-bold text-blue-500 w-20 shrink-0 text-right">1. 입장</div>
+                        <div class="bg-blue-50 px-4 py-2 rounded-xl w-full">"성부와 성자와 성령의 이름으로, 아멘."</div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="font-bold text-blue-500 w-20 shrink-0 text-right">2. 시작</div>
+                        <div class="bg-blue-50 px-4 py-2 rounded-xl w-full">"죄를 고백한 지 <strong>( 한 달 )</strong> 되었습니다."</div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <div class="font-bold text-blue-500 pl-2">3. 고백 (이걸 보고 읽으세요) 👇</div>
+                        <div id="confession-text" class="bg-white border-4 border-blue-200 p-6 rounded-2xl text-gray-700 text-xl shadow-inner min-h-[120px] whitespace-pre-wrap leading-relaxed">
+                            <span class='text-gray-400 text-base'>
+                                (아직 적은 내용이 없어요.<br>
+                                [세탁] 페이지에서 죄를 적고 '고해성사 보러가기' 버튼을 눌러주세요!)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 items-start">
+                        <div class="font-bold text-blue-500 w-20 shrink-0 text-right">4. 마침</div>
+                        <div class="font-bold text-pink-500 leading-snug bg-pink-50 px-4 py-2 rounded-xl w-full">
+                            "이 밖에도 알아내지 못한 죄에 대하여도 통회하오니 사하여 주소서."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 고해성사 후 보속 탭으로 이동하는 버튼 -->
+            <div class="text-center mt-8">
+                <button type="button" onclick="switchTab('penance')" class="bg-gradient-to-r from-blue-400 to-indigo-400 hover:from-blue-500 hover:to-indigo-500 text-white text-2xl font-bold py-4 px-12 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    고해성사 끝! 보속하러 가기 🕊️
+                </button>
+            </div>
+        </section>
+
+        <!-- [섹션 5] 보속 (기도와 실천) -->
+        <section id="penance" class="hidden fade-in space-y-8">
+            <div class="text-center mb-8">
+                <span class="text-6xl">🕊️</span>
+                <h2 class="text-3xl title-font text-blue-600 mt-4">보속 (기도와 실천)</h2>
+                <p class="text-xl text-gray-500 mt-2">깨끗해진 마음으로 하느님께 감사드리며 기도해요.</p>
+            </div>
+
+            <div class="bg-white/70 p-6 rounded-[2rem] shadow-lg border-2 border-white">
+                
+                <!-- 시작 성호경 -->
+                <div class="prayer-card text-center">
+                    <h4 class="prayer-title">시작 기도</h4>
+                    <p class="text-xl">성부와 성자와 성령의 이름으로. 아멘.</p>
+                </div>
+
+                <!-- 통회 기도 (아이들용) -->
+                <div class="prayer-card">
+                    <h4 class="prayer-title">예수님께 드리는 약속</h4>
+                    <p class="text-lg leading-relaxed text-gray-700">
+                        예수님, 제가 지은 죄를 다 용서해주셔서 고맙습니다.<br>
+                        제가 다시는 죄를 지어 제 자신을 더럽히지 않고,<br>
+                        예수님을 슬프게 하지 않겠습니다.<br>
+                        저를 도와주세요.
+                    </p>
+                </div>
+
+                <!-- 주님의 기도 -->
+                <div class="prayer-card">
+                    <h4 class="prayer-title">주님의 기도</h4>
+                    <p class="text-lg leading-relaxed text-gray-700">
+                        하늘에 계신 우리 아버지,<br>
+                        아버지의 이름이 거룩히 빛나시며<br>
+                        아버지의 나라가 오시며<br>
+                        아버지의 뜻이 하늘에서와 같이<br>
+                        땅에서도 이루어지소서!<br><br>
+                        오늘 저희에게 일용할 양식을 주시고<br>
+                        저희에게 잘못한 이를 저희가 용서하오니<br>
+                        저희 죄를 용서하시고<br>
+                        저희를 유혹에 빠지지 않게 하시고<br>
+                        악에서 구하소서. 아멘.
+                    </p>
+                </div>
+
+                <!-- 성모송 -->
+                <div class="prayer-card">
+                    <h4 class="prayer-title">성모송</h4>
+                    <p class="text-lg leading-relaxed text-gray-700">
+                        은총이 가득하신 마리아님, 기뻐하소서!<br>
+                        주님께서 함께 계시니 여인 중에 복되시며<br>
+                        태중의 아들 예수님 또한 복되시나이다.<br><br>
+                        천주의 성모 마리아님,<br>
+                        이제와 저희 죽을 때에<br>
+                        저희 죄인을 위하여 빌어주소서. 아멘.
+                    </p>
+                </div>
+
+                <!-- 영광송 -->
+                <div class="prayer-card">
+                    <h4 class="prayer-title">영광송</h4>
+                    <p class="text-lg leading-relaxed text-gray-700">
+                        영광이 성부와 성자와 성령께<br>
+                        처음과 같이 이제와 항상 영원히. 아멘.
+                    </p>
+                </div>
+
+                <!-- 마침 성호경 -->
+                <div class="prayer-card text-center">
+                    <h4 class="prayer-title">마침 기도</h4>
+                    <p class="text-xl">성부와 성자와 성령의 이름으로. 아멘.</p>
+                </div>
+            </div>
+
+            <!-- 성모님의 편지 -->
+            <div class="bg-pink-50 p-8 rounded-[2rem] border-4 border-pink-200 shadow-xl relative mt-8">
+                <div class="text-center">
+                    <h3 class="text-3xl title-font text-pink-500 mb-6">💌 성모님의 편지</h3>
+                    
+                    <!-- 성모님 이미지 (imgur direct link) -->
+                    <div class="mb-6 mx-auto rounded-xl overflow-hidden shadow-md border-4 border-white max-w-sm">
+                        <img src="https://i.imgur.com/DGVkpU4.png" 
+                             alt="성모님이 아이를 안아주는 그림" 
+                             class="w-full h-auto transform transition hover:scale-105 duration-500">
+                        <p class="text-sm text-gray-400 mt-2 bg-white py-1">"사랑으로 너를 안아줄게"</p>
+                    </div>
+
+                    <div class="bg-white/80 p-6 rounded-2xl text-left shadow-sm">
+                        <p class="text-xl leading-loose text-gray-700 font-medium" id="mary-letter-content">
+                            <!-- JS로 내용이 채워짐 (기본값) -->
+                            "사랑하는 나의 아이들아,<br> 
+                            오늘 너희들이 고해성사를 봐서 나는 너무나도 기쁘단다.<br>
+                            지금 너의 마음은 햇살처럼 반짝이고 있어. ✨<br>
+                            나는 그런 너를 꼭 안아주고 싶단다.<br><br>
+                            어떤 때라도 내가 너의 곁에 있음을 잊지 말아라.<br>
+                            힘들면 언제든 나를 불러줘.<br>
+                            사랑하는 아이야, 예수님과 나는 너를 축복하며 사랑하고 있단다."
+                        </p>
+                        <p class="text-right mt-4 text-pink-500 font-bold">- 너를 사랑하는 성모님이 -</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="mt-auto py-8 text-center text-gray-400 text-lg bg-white/40">
+        천주교 인천교구 서창2동 성당 주일학교<br>
+        <span class="text-sm">Made with Prayer & Love</span>
+    </footer>
+
+    <script>
+        /* =========================================================================
+           [안전한 API 키 관리 방법]
+           
+           이 파일은 웹 브라우저에서 실행되므로, 여기에 직접 키를 적으면
+           다른 사람이 키를 볼 수 있어 보안상 매우 위험합니다. (그래서 오류가 났던 것입니다)
+
+           Netlify로 배포하실 때, 아래 방법을 따라주세요.
+
+           1. Netlify 사이트 설정(Site settings) > Environment variables 메뉴로 이동.
+           2. 'GEMINI_API_KEY'라는 이름으로 키를 추가하세요.
+           3. Build & deploy 메뉴의 'Build command' 설정에 다음 명령어를 입력하세요.
+              sed -i "s|__GEMINI_API_KEY__|$GEMINI_API_KEY|g" index.html
+
+           이렇게 하면 배포되는 순간에만 안전하게 키가 코드에 들어갑니다!
+           ========================================================================= */
+        const apiKey = "__GEMINI_API_KEY__";
+        
+        // 사용자 이름 저장 변수
+        let currentUserName = "";
+
+        // 탭 전환 기능
+        function switchTab(tabId) {
+            ['home', 'check', 'wash', 'guide', 'penance'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === tabId) {
+                    btn.classList.remove('tab-inactive');
+                    btn.classList.add('tab-active');
+                } else {
+                    btn.classList.add('tab-inactive');
+                    btn.classList.remove('tab-active');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tabId === 'wash') {
+                updateSecretNoteFromMirror();
+            }
+            if (tabId === 'penance') {
+                updateMaryLetter();
+            }
+        }
+
+        // [홈] 이름 저장하고 시작하기
+        function saveNameAndStart() {
+            const nameInput = document.getElementById('user-full-name').value.trim();
+
+            if (!nameInput) {
+                alert("이름을 적어주면 더 좋아! (그냥 넘어가고 싶으면 스페이스바를 한 번 눌러줘)");
+                // 이름이 없어도 진행은 가능하게 하려면 아래 return 삭제
+                // return; 
+            }
+
+            currentUserName = nameInput;
+            switchTab('check');
+        }
+
+        // [거울 -> 세탁] 체크한 항목 + 직접 쓴 죄를 비밀 쪽지에 아이 말투로 자동 작성
+        function updateSecretNoteFromMirror() {
+            const checkboxes = document.querySelectorAll('#check input[type="checkbox"]:checked');
+            const manualInput = document.getElementById('manual-sins').value.trim();
+            const noteArea = document.getElementById('secret-note');
+            
+            let text = "예수님, 저 오늘 이런 잘못을 했어요.\n\n";
+            let count = 0;
+
+            // 1. 체크박스 항목 추가
+            checkboxes.forEach(cb => {
+                const labelDiv = cb.nextElementSibling;
+                const textSpan = labelDiv.querySelectorAll('span')[1];
+                if (textSpan) {
+                    text += "- " + textSpan.innerText + "\n";
+                    count++;
+                }
+            });
+
+            // 2. 직접 쓴 항목 추가
+            if (manualInput) {
+                text += "\n" + manualInput; 
+                count++;
+            }
+
+            // 3. 아무것도 없을 때 안내
+            if (count === 0) {
+                text += "(아직 체크한 잘못이 없어요. 거울에서 체크하거나 여기에 직접 적어보세요.)\n";
+            }
+
+            noteArea.value = text;
+        }
+        
+        // [이관 기능] 세탁소 탭에서 쓴 글을 고해 가이드 탭으로 복사 & 이동
+        function transferAndGo() {
+            const noteContent = document.getElementById('secret-note').value; 
+            const targetDiv = document.getElementById('confession-text');
+
+            if (!noteContent.trim()) {
+                if(!confirm("아직 적은 내용이 없어요.\n빈손으로 고해소에 갈까요?")) {
+                    return; 
+                }
+            } else {
+                targetDiv.textContent = noteContent;
+            }
+            switchTab('guide');
+        }
+
+        // [세탁 기능] 화면상의 텍스트 지우기 효과
+        function washAway() {
+            const note = document.getElementById('secret-note');
+            const cover = document.getElementById('bubble-cover');
+            
+            if (note.value.trim() === "") return;
+
+            if (confirm("정말로 깨끗하게 지워버릴까요?")) {
+                cover.style.opacity = '1';
+                setTimeout(() => {
+                    note.value = "";
+                    // 지우고 나면 세번째 거울의 입력값도 초기화해주면 좋음
+                    document.getElementById('manual-sins').value = ""; 
+                    // 체크박스도 해제
+                    document.querySelectorAll('#check input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+                    setTimeout(() => {
+                        cover.style.opacity = '0';
+                        alert("마음이 깨끗해졌어요! 참 잘했어요. ✨");
+                    }, 1000);
+                }, 1000);
+            }
+        }
+
+        // [성모님 편지] 이름 반영하여 업데이트
+        function updateMaryLetter() {
+            // 이름이 입력되지 않은 경우 대비
+            let displayName = currentUserName ? currentUserName : "나의 아이들";
+            let singleName = currentUserName ? currentUserName : "아이야";
+
+            const letterContent = `
+                "사랑하는 나의 <strong>${displayName}</strong>아(야),<br> 
+                오늘 네가 고해성사를 봐서 나는 너무나도 기쁘단다.<br>
+                지금 너의 마음은 햇살처럼 반짝이고 있어. ✨<br>
+                나는 그런 너를 꼭 안아주고 싶단다.<br><br>
+                어떤 때라도 내가 너의 곁에 있음을 잊지 말아라.<br>
+                힘들면 언제든 나를 불러줘.<br>
+                사랑하는 <strong>${singleName}</strong>(아), 예수님과 나는 너를 축복하며 사랑하고 있단다."
+            `;
+            
+            document.getElementById('mary-letter-content').innerHTML = letterContent;
+        }
+
+        // [AI 답장 기능] Gemini API 호출
+        async function askJesus() {
+            let input = document.getElementById('secret-note').value.trim();
+            const responseArea = document.getElementById('ai-response-area');
+            const loading = document.getElementById('ai-loading');
+            const messageDiv = document.getElementById('ai-message');
+
+            if (!input) { 
+                alert('예수님께 드릴 말씀을 먼저 적어주세요.'); 
+                return; 
+            }
+            
+            // 키가 설정되지 않았을 때 (치환되지 않음)
+            if (apiKey === "__GEMINI_API_KEY__") {
+                responseArea.classList.remove('hidden');
+                messageDiv.innerHTML = `🚫 <strong>API 키 설정이 필요해요!</strong><br><br>
+                1. Netlify 설정 > Environment variables에 <strong>GEMINI_API_KEY</strong>를 추가하세요.<br>
+                2. Build settings > Build command에 아래 명령어를 입력하세요:<br>
+                <code>sed -i "s|__GEMINI_API_KEY__|$GEMINI_API_KEY|g" index.html</code>`;
+                return;
+            }
+            
+            responseArea.classList.remove('hidden');
+            loading.classList.remove('hidden');
+            messageDiv.innerHTML = "";
+
+            // 사용자 이름 정보 추가
+            let userInfo = currentUserName ? `이름: ${currentUserName}` : "이름이 없는 어린이";
+
+            const systemPrompt = `
+            당신은 어린이들을 무척 사랑하는 예수님입니다. 
+            사용자(${userInfo})가 자신의 죄나 고민을 이야기하면, 
+            1. 사용자의 이름을 다정하게 부르며 시작해주세요.
+            2. 혼내지 않고 아주 따뜻하고 다정하게 위로해주세요.
+            3. 용기를 북돋아주고, 고해성사를 통해 깨끗해질 수 있다고 말해주세요.
+            4. 말투는 동화책처럼 부드럽게, 이모티콘을 많이 사용해주세요.
+            5. 답변 길이는 3~4문장으로 짧게 해주세요.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [{ text: input }] }], 
+                        systemInstruction: { parts: [{ text: systemPrompt }] } 
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'Server Error');
+                }
+
+                const data = await response.json();
+                const aiResponseText = data.candidates[0].content.parts[0].text;
+                
+                messageDiv.innerHTML = marked.parse(aiResponseText);
+
+            } catch (error) {
+                console.error(error); 
+                messageDiv.innerHTML = "😔 어라? 인터넷 연결이 안 좋아서 편지를 보내지 못했어.<br>하지만 내 마음은 이미 너에게 닿았단다. 사랑해! ❤️";
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
